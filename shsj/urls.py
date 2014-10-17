@@ -11,4 +11,6 @@ urlpatterns = patterns('',
     url(r'^djangoadmin/', include(admin.site.urls)),
     url(r'^$', views.homepage),
     url(r'^signup/$', views.signup),
+    url(r'^login/$',views.login),
+    url(r'^logout/$',views.logout),
 )

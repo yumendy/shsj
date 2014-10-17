@@ -19,6 +19,10 @@
 				<div class="well">
 					<h2 class="text-danger text-center">用户已经存在</h2>
 				</div>
+			{% elif status == 'num_exist' %}
+				<div class="well">
+					<h2 class="text-danger text-center">该学号已经注册</h2>
+				</div>
 			{% endif %}
 			<form method="POST" role="form" class="form-horizontal">
 				{% csrf_token %}

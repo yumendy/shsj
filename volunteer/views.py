@@ -37,6 +37,8 @@ def signup(req):
 		else:
 			if User.objects.filter(username = post.get('username','')):
 				status = 'user_exist'
+			elif MyUser.objects.filter(num = post.get('num','')):
+				status = 'num_exist'
 			else:
 				newuser = User.objects.create_user( username = post.get('username',''), \
 													password = post.get('passwd',''), \
@@ -75,3 +77,17 @@ def login(req):
 			status = 'not_exist_or_passwd_err'
 	content = {'active_menu':'homepage','status':status}
 	return render_to_response('login.html', content, context_instance = RequestContext(req))
+
+def logout(req):
+	auth.logout(req)
+	return HttpResponseRedirect('/')
+
+def submitreport(req):
+	username = req.session.get('username','')
+	content = {'active_menu':'submitReport'}
+	if username != '':
+		user = MyUser.objects.get(user__username = username)
+		content['name'] = user.name 
+	else:
+		return HttpResponseRedirect('/login/')
+	return render_to_response('submitreport.html',content)

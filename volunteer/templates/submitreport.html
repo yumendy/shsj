@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}提交报告{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+			<form role="form" method="post" enctype="multipart/form-data">
+				<div class="form-group">
+					<label for="id_reportname">志愿服务名称</label>
+					<input type="text" class="form-control" id="id_reportname" name="name" required>
+				</div>
+				<div class="form-group col-md-6">
+					<label for="id_starttime">服务开始时间</label>
+					<input type="datetime-local" class="form-control" id="id_starttime" name="start_time">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="id_endtime">服务结束时间</label>
+					<input type="datetime-local" class="form-control" id="id_endtime" name="end_time">
+				</div>
+				<div class="form-group col-md-12">
+					<label for="id_address">志愿服务地点</label>
+					<input type="text" class="form-control" id="id_address" name="address" required>
+				</div>
+				<div class="form-group col-md-4">
+					<label for="id_reporttype">志愿服务类型</label>
+					<select class="form-control" id="id_reporttype" name="report_type">
+						<option value="1">专业类</option>
+						<option value="2">非专业类</option>
+						<option value="3">实践类</option>
+					</select>
+				</div>
+				<div class="form-group col-md-4">
+					<label for="id_authortype">参加身份</label>
+					<select class="form-control" id="id_authortype" name="author_type">
+						<option value="1">组织者</option>
+						<option value="2">参与者</option>
+					</select>
+				</div>
+				<div class="form-group col-md-4">
+					<label for="id_infotype">报告格式</label>
+					<select class="form-control" id="id_infotype" name="info_type">
+						<option value="1">纯文本</option>
+						<option value="2">MarkDown</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="id_info">活动总结</label>
+					<textarea name="info" rows="15" warp="hard" cols="40"></textarea>
+				</div>
+				<div class="form-group col-offset-6">
+					<label for="img1">活动图片1</label>
+					<input type="file" id="img1" required>
+					<p class="help-block">请上传能够认定活动真实性的照片。</p>
+				</div>
+				<div class="form-group col-offset-6">
+					<label for="img2">活动图片2</label>
+					<input type="file" id="img2">
+				</div>
+				<div class="form-group">
+					<div class="col-md-4 col-md-offset-4">
+						<button class="btn btn btn-primary btn-block" type="submit">提交</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -22,7 +22,9 @@ class Report(models.Model):
 	address = models.CharField(max_length = 128)
 	info = models.TextField(max_length = 20480)
 	status = models.IntegerField()
+	report_type = models.IntegerField()
 	author_type = models.IntegerField()
+	info_type = models.IntegerField()
 	img1 = models.URLField()
 	img2 = models.URLField()
 
