@@ -7,7 +7,7 @@ class MyUser(models.Model):
 	num = models.CharField(max_length = 11)
 	classnum = models.CharField(max_length = 8)
 	permission = models.IntegerField()
-	headIng = models.URLField()
+	headImg = models.URLField()
 
 	user = models.OneToOneField(User)
 
