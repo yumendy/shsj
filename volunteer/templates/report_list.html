@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}查勘报告{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+			<h2 class="text-center">已提交的报告列表</h2>
+			<div class="list-group">
+				{% for item in report_list %}
+				{% if item.status == 1 %}
+				<div class="row list-group-item">
+					<div class="col-md-10">
+						<a href="/reportlist/detial/?id={{ item.id }}" class="list-group-item">
+							<h4 class="list-group-item-heading">{{ item.name }}</h4>
+							<p class="list-group-item-text">{{ item.submit_time|date:"Y-m-d H:i:s" }}</p>
+							<p class="list-group-item-text text-info">待审核</p>
+						</a>
+					</div>
+					<div class="col-md-2">
+						<button type="button" class="btn btn-lg btn-warning active" onclick="window.location.href='/reportlist/edit/?id={{ item.id }}'">修改报告</button>
+					</div>
+				</div>
+				{% endif %}
+				{% if item.status == 2 %}
+				<div class="row list-group-item">
+					<div class="col-md-10">
+						<a href="/reportlist/detial/?id={{ item.id }}" class="list-group-item list-group-item-success">
+							<h4 class="list-group-item-heading">{{ item.name }}</h4>
+							<p class="list-group-item-text">{{ item.submit_time|date:"Y-m-d H:i:s" }}</p>
+							<p class="list-group-item-text text-success">审核通过</p>
+						</a>
+					</div>
+					<div class="col-md-2">
+						<button type="button" class="btn btn-lg btn-warning" disabled="disabled">修改报告</button>
+					</div>
+				</div>
+				{% endif %}
+				{% if item.status == 3 %}
+				<div class="row list-group-item">
+					<div class="col-md-10">
+						<a href="/reportlist/detial/?id={{ item.id }}" class="list-group-item list-group-item-danger">
+							<h4 class="list-group-item-heading">{{ item.name }}</h4>
+							<p class="list-group-item-text">{{ item.submit_time|date:"Y-m-d H:i:s" }}</p>
+							<p class="list-group-item-text text-danger">未通过审核</p>
+						</a>
+					</div>
+					<div class="col-md-2">
+						<button type="button" class="btn btn-lg btn-warning" disabled="disabled">修改报告</button>
+					</div>
+				</div>
+				{% endif %}
+				{% empty %}
+				<a href="/submitreport/" class="list-group-item active">
+					<h4 class="list-group-item-heading">暂未提交报告。</h4>
+					<p class="list-group-item-text">点击提交报告。</p>
+				</a>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

@@ -9,6 +9,9 @@
 		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
 		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-theme.min.css" %}">
 		<link rel="stylesheet" type="text/css" href="{% static "css/base.css" %}">
+		<script type="text/javascript" src="{% static "js/jquery.min.js" %}"></script>
+		<script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
+		<script type="text/javascript" src="{% static "js/main.js" %}"></script>
 		<!--[if lt IE 9]>
 			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
 			<script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
@@ -30,14 +33,20 @@
 				<div class="collapse navbar-collapse" id="navbar-collapse-basepage">
 					<ul class="nav navbar-nav">
 						<li id="homepage"><a href="/">主页</a></li>
-						<li id="submitReport"><a>提交报告</a></li>
-						<li id="checkReport"><a>查看报告</a></li>
-						<li id="auditingReport"><a>审核报告</a></li>
+						{% if user.permission %}
+						<li id="submitReport"><a href="/submitreport/">提交报告</a></li>
+						<li id="checkReport"><a href="/reportlist/">查看报告</a></li>
+						{% endif %}
+						{% if user.permission > 1 %}
+						<li id="auditingReport"><a>审核报告&emsp;<span class="badge">{{ num_need_check }}</span></a></li>
+						{% endif %}
+						{% if user.permission > 2 %}
 						<li id="viewCensus"><a>查看统计</a></li>
+						{% endif %}
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
-						{% if name %}
-							<li><p class="navbar-text">欢迎你&nbsp;&nbsp;<span id="base_name">{{ name }}</span></p></li>
+						{% if user %}
+							<li><p class="navbar-text">欢迎你&nbsp;&nbsp;<span id="base_name">{{ user.name }}</span></p></li>
 							<li><a href="/logout/">注销</a></li>
 						{% else %}
 							<li><a href="/signup/">注册</a></li>
@@ -71,12 +80,9 @@
 			</div>
 		</footer>
 		<!-- /.footer-->
-
 		<script type="text/javascript">
 		    var act = document.getElementById("{{ active_menu }}");
 		    act.setAttribute("class","active");
 		</script>
-		<script type="text/javascript" src="{% static "js/jquery.min.js" %}"></script>
-		<script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
 	</body>
 </html>

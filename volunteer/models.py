@@ -18,6 +18,7 @@ class Report(models.Model):
 	name = models.CharField(max_length = 128)
 	start_time = models.DateTimeField()
 	end_time = models.DateTimeField()
+	submit_time = models.DateTimeField(auto_now=True)
 	apply_time = models.FloatField()
 	address = models.CharField(max_length = 128)
 	info = models.TextField(max_length = 20480)
@@ -25,10 +26,11 @@ class Report(models.Model):
 	report_type = models.IntegerField()
 	author_type = models.IntegerField()
 	info_type = models.IntegerField()
-	img1 = models.URLField()
-	img2 = models.URLField()
+	img1 = models.URLField(null=True)
+	img2 = models.URLField(null=True)
 
 	author = models.ForeignKey(MyUser)
+	checker = models.CharField(max_length = 32,null=True)
 
 	def __unicode__(self):
 		return self.author.name + '<<' + self.name + '>>'

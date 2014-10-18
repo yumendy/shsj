@@ -1,6 +1,7 @@
 from django.shortcuts import render, render_to_response
 from django.template import Context, RequestContext
 from models import *
+import re
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.models import User
@@ -14,14 +15,18 @@ def get_headimg(number):
 	else:
 		return ''
 
+def num_need_check():
+	check_lst = Report.objects.filter(status = 1)
+	return len(check_lst)
+
 def homepage(req):
 	username = req.session.get('username','')
-	content = {'active_menu':'homepage'}
+	content = {'active_menu':'homepage','num_need_check':num_need_check()}
 	if username != '':
 		user = MyUser.objects.get(user__username = username)
-		content['name'] = user.name
+		content['user'] = user
 	else:
-		content['name'] = ''
+		content['user'] = ''
 	return render_to_response('index.html',content)
 
 def signup(req):
@@ -54,7 +59,7 @@ def signup(req):
 									)
 				new_myuser.save()
 				status = 'success'
-	content = {'active_menu':'homepage','status':status}
+	content = {'active_menu':'homepage','status':status,'num_need_check':num_need_check()}
 	return render_to_response('signup.html', content, context_instance = RequestContext(req))
 
 def login(req):
@@ -75,7 +80,7 @@ def login(req):
 				status = 'not_active'
 		else:
 			status = 'not_exist_or_passwd_err'
-	content = {'active_menu':'homepage','status':status}
+	content = {'active_menu':'homepage','status':status,'num_need_check':num_need_check()}
 	return render_to_response('login.html', content, context_instance = RequestContext(req))
 
 def logout(req):
@@ -84,10 +89,49 @@ def logout(req):
 
 def submitreport(req):
 	username = req.session.get('username','')
-	content = {'active_menu':'submitReport'}
+	content = {'active_menu':'submitReport','num_need_check':num_need_check()}
+	status = ''
 	if username != '':
 		user = MyUser.objects.get(user__username = username)
-		content['name'] = user.name 
+		content['user'] = user
 	else:
 		return HttpResponseRedirect('/login/')
-	return render_to_response('submitreport.html',content)
+	if req.POST:
+		post = req.POST
+		info = post.get('info','')
+		if len(info) < 2500:
+			status = 'info_short'
+		else:
+			report = Report(
+							name = post.get('name',''),
+							start_time = post.get('start_time',''),
+							end_time = post.get('end_time',''),
+							address = post.get('address',''),
+							status = 1,
+							apply_time = 0,
+							report_type = post.get('report_type',''),
+							author_type = post.get('author_type',''),
+							info_type = post.get('info_type',''),
+							author = user,
+							)
+			if post.get('info_type','') == '2':
+				a = re.compile(r'(<script)(.*)(>)',re.I)
+				res = r'&lt;script\2&gt;'
+				report.info = a.sub(res,info)
+			else:
+				report.info = info
+			report.save()
+			status = 'success'
+		content['status'] = status
+	return render_to_response('submitreport.html', content, context_instance = RequestContext(req))
+
+def report_list(req):
+	username = req.session.get('username','')
+	if username != '':
+		user = MyUser.objects.get(user__username = username)
+	else:
+		return HttpResponseRedirect('/login/')
+	report_list = Report.objects.filter(author = user).order_by('-submit_time')
+	# TODO: Add some info about report list and score
+	content = {'active_menu':'checkReport','num_need_check':num_need_check(),'user':user,'report_list':report_list}
+	return render_to_response('report_list.html',content)
