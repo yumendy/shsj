@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}审核列表{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+			<h2 class="text-center">待审核报告列表</h2>
+			{% for item in auditing_list %}
+				<div class="list-group-item">
+					<a href="/reportlist/auditing/?id={{ item.id }}" class="list-group-item">
+						<h4 class="list-group-item-heading">{{ item.name }}</h4>
+						<p class="list-group-item-text">{{ item.submit_time|date:"Y-m-d H:i:s" }}</p>
+						<p class="list-group-item-text text-info">{{ item.author }}</p>
+					</a>
+				</div>
+			{% empty %}
+				<a href="/viewcensus/" class="list-group-item active">
+					<h4 class="list-group-item-heading">暂无未审核报告。</h4>
+					<p class="list-group-item-text">点击查看统计。</p>
+				</a>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}

@@ -20,6 +20,7 @@ class Report(models.Model):
 	end_time = models.DateTimeField()
 	submit_time = models.DateTimeField(auto_now=True)
 	apply_time = models.FloatField()
+	apply_score = models.FloatField()
 	address = models.CharField(max_length = 128)
 	info = models.TextField(max_length = 20480)
 	status = models.IntegerField()

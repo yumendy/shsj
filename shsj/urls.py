@@ -15,4 +15,7 @@ urlpatterns = patterns('',
     url(r'^logout/$',views.logout),
     url(r'^submitreport/$',views.submitreport),
     url(r'^reportlist/$',views.report_list),
+    url(r'^reportlist/edit/$',views.report_edit),
+    url(r'^reportlist/detail/$',views.report_detail),
+    url(r'^auditinglist/$',views.auditing_list),
 )

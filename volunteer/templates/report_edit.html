@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% block title %}提交报告{% endblock %}
+{% block title %}修改报告{% endblock %}
 
 {% block content %}
 
@@ -9,18 +9,25 @@
 		<div class="col-md-8 col-md-offset-2">
 			{% if status == 'success' %}
 				<div class="well">
-					<h2 class="text-success text-center">报告提交成功</h2>
+					<h2 class="text-success text-center">报告修改成功</h2>
 				</div>
 			{% elif status == 'info_short' %}
 				<div class="well">
 					<h2 class="text-warning text-center">总结字数不足，请继续完善。</h2>
 				</div>
+			{% elif status == 'cannot_edit' %}
+				<div class="well">
+					<h2 class="text-danger text-center">报告已被审核，不能再次修改。</h2>
+				</div>
 			{% endif %}
 			<form role="form" method="post" enctype="multipart/form-data">
+				{% if status == 'cannot_edit' %}
+					<fieldset disabled>
+				{% endif %}
 				{% csrf_token %}
 				<div class="form-group col-md-12">
 					<label for="id_reportname">志愿服务名称</label>
-					<input type="text" class="form-control" id="id_reportname" name="name" required>
+					<input type="text" class="form-control" id="id_reportname" name="name" required value="{{ report.name }}">
 				</div>
 				<div class="form-group col-md-6">
 					<label for="id_starttime">服务开始时间</label>
@@ -32,7 +39,7 @@
 				</div>
 				<div class="form-group col-md-12">
 					<label for="id_address">志愿服务地点</label>
-					<input type="text" class="form-control" id="id_address" name="address" required>
+					<input type="text" class="form-control" id="id_address" name="address" required value="{{ report.address }}">
 				</div>
 				<div class="form-group col-md-4">
 					<label for="id_reporttype">志愿服务类型</label>
@@ -58,11 +65,11 @@
 				</div>
 				<div class="form-group col-md-12">
 					<label for="id_info">活动总结(内容需大于2500字方能提交)</label>
-					<textarea name="info" rows="15" warp="hard" cols="105" id="id_info"></textarea>
+					<textarea name="info" rows="15" warp="hard" cols="105" id="id_info">{{ report.info }}</textarea>
 				</div>
 				<div class="form-group col-md-6">
 					<label for="img1">活动图片1</label>
-					<input type="file" id="img1" required>
+					<input type="file" id="img1">
 					<p class="help-block">请上传能够认定活动真实性的照片。</p>
 				</div>
 				<div class="form-group col-md-6">
@@ -72,9 +79,12 @@
 				</div>
 				<div class="form-group">
 					<div class="col-md-4 col-md-offset-4">
-						<button class="btn btn btn-primary btn-block" type="submit" id="id_submit">提交</button>
+						<button class="btn btn btn-primary btn-block" type="submit" id="id_submit">修改</button>
 					</div>
 				</div>
+				{% if status == 'cannot_edit' %}
+					</fieldset>
+				{% endif %}
 			</form>
 		</div>
 	</div>

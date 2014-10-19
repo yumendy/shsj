@@ -38,7 +38,7 @@
 						<li id="checkReport"><a href="/reportlist/">查看报告</a></li>
 						{% endif %}
 						{% if user.permission > 1 %}
-						<li id="auditingReport"><a>审核报告&emsp;<span class="badge">{{ num_need_check }}</span></a></li>
+						<li id="auditingReport"><a href="/auditinglist/">审核报告&nbsp;<span class="badge">{{ num_need_check }}</span></a></li>
 						{% endif %}
 						{% if user.permission > 2 %}
 						<li id="viewCensus"><a>查看统计</a></li>

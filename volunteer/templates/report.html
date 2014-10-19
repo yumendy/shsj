@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}报告详情{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-12"><h1 class="text-center">{{ report.name }}</h1></div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-md-12">
+			{% if report.status == 1 %}
+				<h2 class="text-center text-info">待审核</h2>
+			{% elif report.status == 2 %}
+				<h2 class="text-center text-success">审核通过，已认定{{report.apply_time}}小时，每小时{{report.apply_score}}}分</h2>
+			{% else %}
+				<h2 class="text-center text-danger">审核未通过</h2>
+			{% endif %}
+		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-md-7">
+			<div class="col-md-12">
+				<h3>姓名：{{ report.author.name }}</h3>
+			</div>
+			<div class="col-md-12">
+				<h3>学号：{{ report.author.num }}</h3>
+			</div>
+			<div class="col-md-12">
+				<h3>活动开始时间：{{ report.start_time|date:"Y-m-d H:i" }}</h3>
+			</div>
+			<div class="col-md-12">
+				<h3>活动结束时间：{{ report.end_time|date:"Y-m-d H:i" }}</h3>
+			</div>
+			<div class="col-md-12">
+				<h3>活动地点：{{ report.address }}</h3>
+			</div>
+			<div class="col-md-12">
+				<h3>活动类型：
+					{% if report.report_type == 1 %}
+						专业类
+					{% elif report.report_type == 2 %}
+						非专业类
+					{% else %}
+						实践类
+					{% endif %}
+				</h3>
+			</div>
+			<div class="col-md-12">
+				<h3>参加身份：
+					{% if report.author_type == 1 %}
+						组织者
+					{% else %}
+						参与者
+					{% endif %}
+				</h3>
+			</div>
+		</div>
+		<div class="col-md-5">
+			<img src="{{ report.author.headImg }}" class="img-rounded">
+		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-md-12">
+			<pre>{{ report.info }}</pre>
+		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-md-6">
+			<img src="{{ report.author.img1 }}" class="img-rounded">
+		</div>
+		<div class="col-md-6">
+			<img src="{{ report.author.img2 }}" class="img-rounded">
+		</div>
+	</div>
+</div>
+
+{% endblock %}

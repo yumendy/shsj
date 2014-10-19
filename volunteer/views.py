@@ -109,6 +109,7 @@ def submitreport(req):
 							address = post.get('address',''),
 							status = 1,
 							apply_time = 0,
+							apply_score = 0,
 							report_type = post.get('report_type',''),
 							author_type = post.get('author_type',''),
 							info_type = post.get('info_type',''),
@@ -135,3 +136,80 @@ def report_list(req):
 	# TODO: Add some info about report list and score
 	content = {'active_menu':'checkReport','num_need_check':num_need_check(),'user':user,'report_list':report_list}
 	return render_to_response('report_list.html',content)
+
+def report_edit(req):
+	username = req.session.get('username','')
+	status = ''
+	if username != '':
+		user = MyUser.objects.get(user__username = username)
+	else:
+		return HttpResponseRedirect('/login/')
+	Id = req.GET.get('id','')
+	try:
+		report = Report.objects.get(pk = Id)
+	except:
+		return HttpResponseRedirect('/reportlist/')
+	if report.author != user:
+		return HttpResponseRedirect('/reportlist/')
+	else:
+		if report.status != 1:
+			status = 'cannot_edit'
+		else:
+			if req.POST:
+				post = req.POST
+				info = post.get('info','')
+				if len(info) < 2500:
+					status = 'info_short'
+				else:
+					report.name = post.get('name','')
+					report.start_time = post.get('start_time','')
+					report.end_time = post.get('end_time','')
+					report.address = post.get('address','')
+					report.report_type = post.get('report_type','')
+					report.author_type = post.get('author_type','')
+					report.info_type = post.get('info_type','')
+					if post.get('info_type','') == '2':
+						a = re.compile(r'(<script)(.*)(>)',re.I)
+						res = r'&lt;script\2&gt;'
+						report.info = a.sub(res,info)
+					else:
+						report.info = info
+					report.save()
+					status = 'success'
+	content = {'user':user,'active_menu':'submitReport','num_need_check':num_need_check(),'report':report, 'status':status}
+	return render_to_response("report_edit.html",content,context_instance = RequestContext(req))
+
+def report_detail(req):
+	username = req.session.get('username','')
+	if username != '':
+		user = MyUser.objects.get(user__username = username)
+	else:
+		return HttpResponseRedirect('/login/')
+	Id = req.GET.get('id','')
+	try:
+		report = Report.objects.get(pk = Id)
+	except:
+		if user.permission == 1:
+			return HttpResponseRedirect('/reportlist/')
+		elif user.permission > 1 and num_need_check() > 0:
+			return HttpResponseRedirect('checklist')
+		else:
+			return HttpResponseRedirect('/')
+	if user.permission == 1:
+		if report.author != user:
+			return HttpResponseRedirect('/reportlist/')
+	content = {'report':report,'user':user,'num_need_check':num_need_check(),'active_menu':'checkReport'}
+	return render_to_response('report.html',content)
+
+def auditing_list(req):
+	username = req.session.get('username','')
+	if username != '':
+		user = MyUser.objects.get(user__username = username)
+	else:
+		return HttpResponseRedirect('/login/')
+	if user.permission == 1:
+		return HttpResponseRedirect('/')
+	else:
+		auditing_list = Report.objects.filter(status = 1)
+	content = {'auditing_list':auditing_list,'user':user,'num_need_check':num_need_check(),'active_menu':'auditingReport'}
+	return render_to_response('auditing_list.html',content)
