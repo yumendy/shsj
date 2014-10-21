@@ -41,13 +41,15 @@
 						<li id="auditingReport"><a href="/auditinglist/">审核报告&nbsp;<span class="badge">{{ num_need_check }}</span></a></li>
 						{% endif %}
 						{% if user.permission > 2 %}
-						<li id="viewCensus"><a>查看统计</a></li>
+						<li id="queryReport"><a href="/querry/">条件查询</a></li>
+						<!--<li id="viewcensus"><a>数据统计</a></li>-->
 						{% endif %}
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						{% if user %}
 							<li><p class="navbar-text">欢迎你&nbsp;&nbsp;<span id="base_name">{{ user.name }}</span></p></li>
 							<li><a href="/logout/">注销</a></li>
+							<li><a href="/setpasswd/">修改密码</a></li>
 						{% else %}
 							<li><a href="/signup/">注册</a></li>
 							<li><a href="/login/">登录</a></li>

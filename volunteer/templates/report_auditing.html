@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% block title %}报告详情{% endblock %}
+{% block title %}报告审核{% endblock %}
 
 {% block content %}
 
@@ -14,7 +14,7 @@
 			{% if report.status == 1 %}
 				<h2 class="text-center text-info">待审核</h2>
 			{% elif report.status == 2 %}
-				<h2 class="text-center text-success">审核通过，已认定{{report.apply_time}}小时，每小时{{report.apply_score}}分</h2>
+				<h2 class="text-center text-success">审核通过，已认定{{report.apply_time}}小时，每小时{{report.apply_score}}}分</h2>
 			{% else %}
 				<h2 class="text-center text-danger">审核未通过</h2>
 			{% endif %}
@@ -77,6 +77,30 @@
 		<div class="col-md-6">
 			<img src="{{ report.author.img2 }}" class="img-rounded">
 		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<form method="post">
+		{% csrf_token %}
+			<div class="form-group col-md-4">
+				<label for="id_apply_time">认定时长（小时）</label>
+				<input type="text" class="form-control" id="id_apply_time" name="apply_time" required>
+			</div>
+			<div class="form-group col-md-4">
+				<label for="id_apply_score">认定分数（分/小时）</label>
+				<input type="text" class="form-control" id="id_apply_score" name="apply_score" required>
+			</div>
+			<div class="form-group col-md-4">
+				<label for="id_status">认定结果</label>
+				<select class="form-control" id="id_status" name="status">
+					<option value="2">通过</option>
+					<option value="3">不通过</option>
+				</select>
+			</div>
+			<div class="form-group col-md-4 col-md-offset-4">
+				<button class="btn btn btn-primary btn-block" type="submit">提交</button>
+			</div>
+		</form>
 	</div>
 </div>
 

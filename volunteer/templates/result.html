@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}查询结果{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		{% if model == '1' %}
+			<div class="col-md-8 col-md-offset-2 well">
+			{% if status == 'no_student' %}
+				<h2 class="text-center text-warring">未查询到学号为<span class="text-danger">{{ key }}</span>的学生。</h2>
+			{% else %}
+				<h2 class="text-center"><span class="text-info">{{ student.name }}</span>同学共<span class="text-info">{{ sum_report }}</span>篇报告，共<span class="text-danger">{{ score }}</span>分</h2>
+				<h4 class="text-center">查询时段：<span class="text-info">{{ st_time|date:"Y-m-d H:i" }}</span>到<span class="text-info">{{ ed_time|date:"Y-m-d H:i" }}</span></h4>
+				<div class="list-group">
+				{% for report in reportlist %}
+					{% if report.status == 1 %}
+						<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item">
+					{% elif report.status == 2 %}
+						<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item list-group-item-success">
+					{% else %}
+						<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item list-group-item-danger">
+					{% endif %}
+						<h4 class="list-group-item-heading">{{ report.name }}</h4>
+				 		<p class="list-group-item-text">{{ report.submit_time|date:"Y-m-d H:i:s" }}</p>
+				 	{% if report.status == 1 %}
+				 		<p class="list-group-item-text text-info">待审核</p>
+				 	{% elif report.status == 2 %}
+				 		<p class="list-group-item-text text-success">审核通过</p>
+				 	{% else %}
+				 		<p class="list-group-item-text text-danger">审核未通过</p>
+				 	{% endif %}
+						</a>
+				{% empty %}
+					<a href="/querry/" class="list-group-item active">
+					    <h4 class="list-group-item-heading">该同学此时段无提交报告。</h4>
+					    <p class="list-group-item-text">点击查询其他。</p>
+					</a>
+				{% endfor %}
+				</div>
+			{% endif %}
+				<div class="col-md-2 col-md-offset-5">
+					<a href="/querry/" class="btn btn-primary" role="button">返回</a>
+				</div>
+			</div>
+		{% elif model == '2' %}
+			<div class="col-md-8 col-md-offset-2 well">
+			<h4 class="text-center">查询时段：<span class="text-info">{{ st_time|date:"Y-m-d H:i" }}</span>到<span class="text-info">{{ ed_time|date:"Y-m-d H:i" }}</span></h4>
+			<div class="list-group">
+			{% for report in reportlist %}
+				{% if report.status == 1 %}
+					<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item">
+				{% elif report.status == 2 %}
+					<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item list-group-item-success">
+				{% else %}
+					<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item list-group-item-danger">
+				{% endif %}
+					<h4 class="list-group-item-heading">{{ report }}</h4>
+			 		<p class="list-group-item-text">{{ report.submit_time|date:"Y-m-d H:i:s" }}</p>
+			 	{% if report.status == 1 %}
+			 		<p class="list-group-item-text text-info">待审核</p>
+			 	{% elif report.status == 2 %}
+			 		<p class="list-group-item-text text-success">审核通过</p>
+			 	{% else %}
+			 		<p class="list-group-item-text text-danger">审核未通过</p>
+			 	{% endif %}
+					</a>
+			{% empty %}
+				<a href="/querry/" class="list-group-item active">
+				    <h4 class="list-group-item-heading">{{key}}同学此时段无提交报告。</h4>
+				    <p class="list-group-item-text">点击查询其他。</p>
+				</a>
+			{% endfor %}
+			</div>
+			<div class="col-md-2 col-md-offset-5">
+				<a href="/querry/" class="btn btn-primary" role="button">返回</a>
+			</div>
+		{% elif model == '3' %}
+			<div class="col-md-8 col-md-offset-2 well">
+				<h2 class="text-center"><span class="text-info">{{ key }}</span>班同学共提交<span class="text-info">{{ sum_report }}</span>篇报告，共<span class="text-danger">{{ score }}</span>分</h2>
+				<h4 class="text-center">查询时段：<span class="text-info">{{ st_time|date:"Y-m-d H:i" }}</span>到<span class="text-info">{{ ed_time|date:"Y-m-d H:i" }}</span></h4>
+				<div class="list-group">
+				{% for report in reportlist %}
+					{% if report.status == 1 %}
+						<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item">
+					{% elif report.status == 2 %}
+						<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item list-group-item-success">
+					{% else %}
+						<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item list-group-item-danger">
+					{% endif %}
+						<h4 class="list-group-item-heading">{{ report }}</h4>
+				 		<p class="list-group-item-text">{{ report.submit_time|date:"Y-m-d H:i:s" }}</p>
+				 	{% if report.status == 1 %}
+				 		<p class="list-group-item-text text-info">待审核</p>
+				 	{% elif report.status == 2 %}
+				 		<p class="list-group-item-text text-success">审核通过</p>
+				 	{% else %}
+				 		<p class="list-group-item-text text-danger">审核未通过</p>
+				 	{% endif %}
+						</a>
+				{% empty %}
+					<a href="/querry/" class="list-group-item active">
+					    <h4 class="list-group-item-heading">该班级同学此时段无提交报告。</h4>
+					    <p class="list-group-item-text">点击查询其他。</p>
+					</a>
+				{% endfor %}
+				</div>
+				<div class="col-md-2 col-md-offset-5">
+					<a href="/querry/" class="btn btn-primary" role="button">返回</a>
+				</div>
+			</div>
+		{% elif model == '4' %}
+			<div class="col-md-8 col-md-offset-2 well">
+				<h2 class="text-center">所有同学共提交<span class="text-info">{{ sum_report }}</span>篇报告，共<span class="text-danger">{{ score }}</span>分</h2>
+				<h4 class="text-center">查询时段：<span class="text-info">{{ st_time|date:"Y-m-d H:i" }}</span>到<span class="text-info">{{ ed_time|date:"Y-m-d H:i" }}</span></h4>
+				<div class="list-group">
+				{% for report in reportlist %}
+					{% if report.status == 1 %}
+						<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item">
+					{% elif report.status == 2 %}
+						<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item list-group-item-success">
+					{% else %}
+						<a href="/reportlist/detail/?id={{ report.id }}" class="list-group-item list-group-item-danger">
+					{% endif %}
+						<h4 class="list-group-item-heading">{{ report }}</h4>
+				 		<p class="list-group-item-text">{{ report.submit_time|date:"Y-m-d H:i:s" }}</p>
+				 	{% if report.status == 1 %}
+				 		<p class="list-group-item-text text-info">待审核</p>
+				 	{% elif report.status == 2 %}
+				 		<p class="list-group-item-text text-success">审核通过</p>
+				 	{% else %}
+				 		<p class="list-group-item-text text-danger">审核未通过</p>
+				 	{% endif %}
+						</a>
+				{% empty %}
+					<a href="/querry/" class="list-group-item active">
+					    <h4 class="list-group-item-heading">全院同学此时段无提交报告。</h4>
+					    <p class="list-group-item-text">点击查询其他。</p>
+					</a>
+				{% endfor %}
+				</div>
+				<div class="col-md-2 col-md-offset-5">
+					<a href="/querry/" class="btn btn-primary" role="button">返回</a>
+				</div>
+			</div>
+		{% endif %}
+	</div>
+</div>
+
+{% endblock %}

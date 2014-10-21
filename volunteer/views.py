@@ -2,6 +2,7 @@ from django.shortcuts import render, render_to_response
 from django.template import Context, RequestContext
 from models import *
 import re
+import datetime
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.models import User
@@ -59,7 +60,7 @@ def signup(req):
 									)
 				new_myuser.save()
 				status = 'success'
-	content = {'active_menu':'homepage','status':status,'num_need_check':num_need_check()}
+	content = {'active_menu':'homepage','status':status,'num_need_check':num_need_check(),'user':''}
 	return render_to_response('signup.html', content, context_instance = RequestContext(req))
 
 def login(req):
@@ -80,14 +81,14 @@ def login(req):
 				status = 'not_active'
 		else:
 			status = 'not_exist_or_passwd_err'
-	content = {'active_menu':'homepage','status':status,'num_need_check':num_need_check()}
+	content = {'active_menu':'homepage','status':status,'num_need_check':num_need_check(),'user':''}
 	return render_to_response('login.html', content, context_instance = RequestContext(req))
 
 def logout(req):
 	auth.logout(req)
 	return HttpResponseRedirect('/')
 
-def submitreport(req):
+def submit_report(req):
 	username = req.session.get('username','')
 	content = {'active_menu':'submitReport','num_need_check':num_need_check()}
 	status = ''
@@ -192,7 +193,7 @@ def report_detail(req):
 		if user.permission == 1:
 			return HttpResponseRedirect('/reportlist/')
 		elif user.permission > 1 and num_need_check() > 0:
-			return HttpResponseRedirect('checklist')
+			return HttpResponseRedirect('/auditinglist/')
 		else:
 			return HttpResponseRedirect('/')
 	if user.permission == 1:
@@ -213,3 +214,113 @@ def auditing_list(req):
 		auditing_list = Report.objects.filter(status = 1)
 	content = {'auditing_list':auditing_list,'user':user,'num_need_check':num_need_check(),'active_menu':'auditingReport'}
 	return render_to_response('auditing_list.html',content)
+
+def report_auditing(req):
+	username = req.session.get('username','')
+	if username != '':
+		user = MyUser.objects.get(user__username = username)
+	else:
+		return HttpResponseRedirect('/login/')
+	if user.permission == 1:
+		return HttpResponseRedirect('/')
+	else:
+		Id = req.GET.get('id','')
+		try:
+			report = Report.objects.get(pk = Id)
+		except:
+			if user.permission > 1 and num_need_check() > 0:
+				return HttpResponseRedirect('/auditinglist/')
+			else:
+				return HttpResponseRedirect('/')
+	if req.POST:
+		post = req.POST
+		status = post.get('status',1)
+		report.status = status
+		if status == '2':
+			report.apply_score = post.get('apply_score',0)
+			report.apply_time = post.get('apply_time',0)
+		report.checker = user.name
+		report.save()
+		url = '/reportlist/detail/?id=' + str(report.id)
+		return HttpResponseRedirect(url)
+	content = {'user':user,'num_need_check':num_need_check(),'active_menu':'auditingReport','report':report}
+	return render_to_response('report_auditing.html',content,context_instance = RequestContext(req))
+
+def querry(req):
+	username = req.session.get('username','')
+	if username != '':
+		user = MyUser.objects.get(user__username = username)
+	else:
+		return HttpResponseRedirect('/login/')
+	if user.permission < 3:
+		return HttpResponseRedirect('/')
+	else:
+		if req.POST:
+			post = req.POST
+			model = post.get('model','')
+			key = post.get('key','')
+			st_time = post.get('st_time','')
+			ed_time = post.get('ed_time','')
+			status = ''
+			if model == '1':
+				try:
+					student = MyUser.objects.get(num = key)
+				except:
+					status = 'no_student'
+				else:
+					reportlist = Report.objects.filter(author__num = key).filter(submit_time__gte = st_time).filter(submit_time__lte = ed_time)
+					sum_report = len(reportlist)
+					score = 0
+					for item in reportlist:
+						score += item.apply_time * item.apply_score
+					st_time = datetime.datetime.strptime(st_time,'%Y-%m-%dT%H:%M')
+					ed_time = datetime.datetime.strptime(ed_time,'%Y-%m-%dT%H:%M')
+				content = {'model':model,'reportlist':reportlist,'sum_report':sum_report,'score':score,'user':user,'num_need_check':num_need_check(),'active_menu':'queryReport','student':student,'key':key,'st_time':st_time,'ed_time':ed_time}
+			elif model == '2':
+				reportlist = Report.objects.filter(author__name = key).filter(submit_time__gte = st_time).filter(submit_time__lte = ed_time)
+				st_time = datetime.datetime.strptime(st_time,'%Y-%m-%dT%H:%M')
+				ed_time = datetime.datetime.strptime(ed_time,'%Y-%m-%dT%H:%M')
+				content = {'model':model,'reportlist':reportlist,'user':user,'num_need_check':num_need_check(),'active_menu':'queryReport','key':key,'st_time':st_time,'ed_time':ed_time}
+			elif model == '3':
+				reportlist = Report.objects.filter(author__classnum = key).filter(submit_time__gte = st_time).filter(submit_time__lte = ed_time)
+				sum_report = len(reportlist)
+				score = 0
+				for item in reportlist:
+					score += item.apply_time * item.apply_score
+				st_time = datetime.datetime.strptime(st_time,'%Y-%m-%dT%H:%M')
+				ed_time = datetime.datetime.strptime(ed_time,'%Y-%m-%dT%H:%M')
+				content = {'model':model,'reportlist':reportlist,'sum_report':sum_report,'score':score,'user':user,'num_need_check':num_need_check(),'active_menu':'queryReport','key':key,'st_time':st_time,'ed_time':ed_time}
+			elif model == '4':
+				reportlist = Report.objects.all().filter(submit_time__gte = st_time).filter(submit_time__lte = ed_time)
+				sum_report = len(reportlist)
+				score = 0
+				for item in reportlist:
+					score += item.apply_time * item.apply_score
+				st_time = datetime.datetime.strptime(st_time,'%Y-%m-%dT%H:%M')
+				ed_time = datetime.datetime.strptime(ed_time,'%Y-%m-%dT%H:%M')
+				content = {'model':model,'reportlist':reportlist,'sum_report':sum_report,'score':score,'user':user,'num_need_check':num_need_check(),'active_menu':'queryReport','st_time':st_time,'ed_time':ed_time}
+			return render_to_response('result.html',content)
+		else:
+			content = {'user':user,'num_need_check':num_need_check(),'active_menu':'queryReport'}
+			return render_to_response('querry.html',content,context_instance = RequestContext(req))
+
+def setpasswd(req):
+	username = req.session.get('username','')
+	if username != '':
+		user = MyUser.objects.get(user__username = username)
+	else:
+		return HttpResponseRedirect('/login/')
+	status = ''
+	if req.POST:
+		post = req.POST
+		if user.user.check_password(post.get('old','')):
+			if post.get('new','') == post.get('new_re',''):
+				user.user.set_password(post.get('new',''))
+				user.user.save()
+				status = 'success'
+			else:
+				status = 're_err'
+		else:
+			status = 'passwd_err'
+	content = {'user':user,'num_need_check':num_need_check(),'active_menu':'homepage','status':status}
+	return render_to_response('setpasswd.html',content,context_instance = RequestContext(req))
