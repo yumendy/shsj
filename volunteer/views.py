@@ -3,9 +3,15 @@ from django.template import Context, RequestContext
 from models import *
 import re
 import datetime
+from markdown import markdown
+from random import randint
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.models import User
+
+from sae.storage import Bucket, Client
+from sae.ext.storage import monkey
+monkey.patch_all()
 
 # Create your views here.
 
@@ -99,8 +105,25 @@ def submit_report(req):
 		return HttpResponseRedirect('/login/')
 	if req.POST:
 		post = req.POST
+		if req.FILES:
+			img1 = req.FILES['img1']
+			img2 = req.FILES['img2']
+			bucket = Bucket('img')
+			bucket.put()
+			bucket.post(acl='.r:.sinaapp.com,.r:sae.sina.com.cn')
+			tut1 = img1._name.split('.')[-1]
+			tut2 = img2._name.split('.')[-1]
+			if tut1.lower() not in ['jpg','jpeg','bmp','gif','png']:
+				tut1 = 'jpg'
+			if tut2.lower() not in ['jpg','jpeg','bmp','gif','png']:
+				tut2 = 'jpg'
+			dt_str = datetime.datetime.strftime(datetime.datetime.now(),'%Y%m%d%H%M%S')
+			filename1 = dt_str + str(randint(100,999)) + '.' + tut1
+			filename2 = dt_str + str(randint(100,999)) + '.' + tut2
+			bucket.put_object(filename1,img1)
+			bucket.put_object(filename2,img2)
 		info = post.get('info','')
-		if len(info) < 2500:
+		if len(info) < 500:
 			status = 'info_short'
 		else:
 			report = Report(
@@ -115,6 +138,8 @@ def submit_report(req):
 							author_type = post.get('author_type',''),
 							info_type = post.get('info_type',''),
 							author = user,
+							img1 = bucket.generate_url(filename1), \
+							img2 = bucket.generate_url(filename2), \
 							)
 			if post.get('info_type','') == '2':
 				a = re.compile(r'(<script)(.*)(>)',re.I)
@@ -158,8 +183,24 @@ def report_edit(req):
 		else:
 			if req.POST:
 				post = req.POST
+				if req.FILES:
+					img1 = req.FILES['img1']
+					img2 = req.FILES['img2']
+					bucket = Bucket('img')
+					bucket.put()
+					bucket.post(acl='.r:.sinaapp.com,.r:sae.sina.com.cn')
+					tut1 = img1._name.split('.')[-1]
+					if tut1.lower() not in ['jpg','jpeg','bmp','gif','png']:
+						tut1 = 'jpg'
+					if tut2.lower() not in ['jpg','jpeg','bmp','gif','png']:
+						tut2 = 'jpg'
+					dt_str = datetime.strftime(datetime.now(),'%Y%m%d%H%M%S')
+					filename1 = dt_str + str(randint(100,999)) + '.' + tut1
+					filename2 = dt_str + str(randint(100,999)) + '.' + tut2
+					bucket.put_object(filename1,img1)
+					bucket.put_object(filename2,img2)
 				info = post.get('info','')
-				if len(info) < 2500:
+				if len(info) < 500:
 					status = 'info_short'
 				else:
 					report.name = post.get('name','')
@@ -169,6 +210,8 @@ def report_edit(req):
 					report.report_type = post.get('report_type','')
 					report.author_type = post.get('author_type','')
 					report.info_type = post.get('info_type','')
+					img1 = bucket.generate_url(filename1)
+					img2 = bucket.generate_url(filename2)
 					if post.get('info_type','') == '2':
 						a = re.compile(r'(<script)(.*)(>)',re.I)
 						res = r'&lt;script\2&gt;'
@@ -199,6 +242,8 @@ def report_detail(req):
 	if user.permission == 1:
 		if report.author != user:
 			return HttpResponseRedirect('/reportlist/')
+	if report.info_type == 2:
+		report.info = markdown(report.info)
 	content = {'report':report,'user':user,'num_need_check':num_need_check(),'active_menu':'checkReport'}
 	return render_to_response('report.html',content)
 
@@ -243,6 +288,8 @@ def report_auditing(req):
 		report.save()
 		url = '/reportlist/detail/?id=' + str(report.id)
 		return HttpResponseRedirect(url)
+	if report.info_type == 2:
+		report.info = markdown(report.info)
 	content = {'user':user,'num_need_check':num_need_check(),'active_menu':'auditingReport','report':report}
 	return render_to_response('report_auditing.html',content,context_instance = RequestContext(req))
 

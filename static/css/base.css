@@ -6,8 +6,10 @@ body
 
 #header-base
 {
-	background-color:#000;
+	background-color:rgb(124,0,0);
 	color:#fff;
+	font-family: 'Microsoft Yahei', '微软雅黑';
+	font-weight: bold;
 }
 
 #base_name

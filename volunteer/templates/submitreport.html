@@ -23,11 +23,13 @@
 					<input type="text" class="form-control" id="id_reportname" name="name" required>
 				</div>
 				<div class="form-group col-md-6">
-					<label for="id_starttime">服务开始时间</label>
+					<label for="id_starttime">服务开始时间(请点击选择日期，并输入具体时间点
+)</label>
 					<input type="datetime-local" class="form-control" id="id_starttime" name="start_time" required>
 				</div>
 				<div class="form-group col-md-6">
-					<label for="id_endtime">服务结束时间</label>
+					<label for="id_endtime">服务结束时间(请点击选择日期，并输入具体时间点
+)</label>
 					<input type="datetime-local" class="form-control" id="id_endtime" name="end_time" required>
 				</div>
 				<div class="form-group col-md-12">
@@ -57,17 +59,17 @@
 					</select>
 				</div>
 				<div class="form-group col-md-12">
-					<label for="id_info">活动总结(内容需大于2500字方能提交)</label>
+					<label for="id_info">活动总结(内容需大于500字方能提交)</label>
 					<textarea name="info" rows="15" warp="hard" cols="105" id="id_info"></textarea>
 				</div>
 				<div class="form-group col-md-6">
 					<label for="img1">活动图片1</label>
-					<input type="file" id="img1" required>
+					<input type="file" id="img1" name="img1" required>
 					<p class="help-block">请上传能够认定活动真实性的照片。</p>
 				</div>
 				<div class="form-group col-md-6">
 					<label for="img2">活动图片2</label>
-					<input type="file" id="img2">
+					<input type="file" id="img2" name="img2" required>
 					<p class="help-block">每张照片大小不超过2.5M。</p>
 				</div>
 				<div class="form-group">
