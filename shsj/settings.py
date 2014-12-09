@@ -26,11 +26,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '#dh180f@s!vw40=t$zb1(a1a*x_rpv9%#o2u%m4sx!igf$cx#h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['hitcszyfw.sinaapp.com','localhost']
 
 
 # Application definition

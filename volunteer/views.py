@@ -46,6 +46,8 @@ def signup(req):
 		repasswd = post.get('repasswd','')
 		if passwd != repasswd:
 			status = 're_err'
+		elif len(post.get('classnum','')) != 8:
+			status = 'classnum_err'
 		else:
 			if User.objects.filter(username = post.get('username','')):
 				status = 'user_exist'
@@ -190,11 +192,12 @@ def report_edit(req):
 					bucket.put()
 					bucket.post(acl='.r:.sinaapp.com,.r:sae.sina.com.cn')
 					tut1 = img1._name.split('.')[-1]
+					tut2 = img2._name.split('.')[-1]
 					if tut1.lower() not in ['jpg','jpeg','bmp','gif','png']:
 						tut1 = 'jpg'
 					if tut2.lower() not in ['jpg','jpeg','bmp','gif','png']:
 						tut2 = 'jpg'
-					dt_str = datetime.strftime(datetime.now(),'%Y%m%d%H%M%S')
+					dt_str = datetime.datetime.strftime(datetime.datetime.now(),'%Y%m%d%H%M%S')
 					filename1 = dt_str + str(randint(100,999)) + '.' + tut1
 					filename2 = dt_str + str(randint(100,999)) + '.' + tut2
 					bucket.put_object(filename1,img1)
@@ -210,8 +213,13 @@ def report_edit(req):
 					report.report_type = post.get('report_type','')
 					report.author_type = post.get('author_type','')
 					report.info_type = post.get('info_type','')
-					img1 = bucket.generate_url(filename1)
-					img2 = bucket.generate_url(filename2)
+					try:
+						img1 = bucket.generate_url(filename1)
+						img2 = bucket.generate_url(filename2)
+						report.img1 = img1
+						report.img2 = img2
+					except:
+						pass
 					if post.get('info_type','') == '2':
 						a = re.compile(r'(<script)(.*)(>)',re.I)
 						res = r'&lt;script\2&gt;'

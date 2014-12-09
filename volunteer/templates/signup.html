@@ -23,6 +23,10 @@
 				<div class="well">
 					<h2 class="text-danger text-center">该学号已经注册</h2>
 				</div>
+			{% elif status == 'classnum_err' %}
+				<div class="well">
+					<h2 class="text-danger text-center">请用8位班号注册</h2>
+				</div>
 			{% endif %}
 			<form method="POST" role="form" class="form-horizontal">
 				{% csrf_token %}
